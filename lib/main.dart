@@ -81,6 +81,59 @@ class _MyAppState extends State<MyApp> {
     final maxX =
         tempoDots.length <= 1 ? 1 : (tempoDots[tempoDots.length - 1].x + 1);
 
+    final tempoChart = LineChart(
+      LineChartData(
+        minY: 0,
+        maxY: 240,
+        minX: minX.toDouble(),
+        maxX: maxX.toDouble(),
+        clipData: FlClipData.horizontal(),
+        lineBarsData: [tempoLine(tempoDots), scoreLine(scoreDots)],
+        extraLinesData: ExtraLinesData(
+          horizontalLines: [
+            HorizontalLine(
+              y: _targetTempo.toDouble(),
+              color: _gameActive ? GAME_COLOR : Colors.transparent,
+            )
+          ],
+          extraLinesOnTop: false,
+        ),
+        titlesData: FlTitlesData(
+          show: true,
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            axisNameWidget: const Text(
+              "Seconds",
+              style: TextStyle(),
+            ),
+            sideTitles: SideTitles(showTitles: true),
+          ),
+          leftTitles: AxisTitles(
+            axisNameWidget: const Text(
+              "Tempo",
+              style: TextStyle(),
+            ),
+            sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+          ),
+        ),
+      ),
+    );
+
+    final chartStack = Stack(
+      children: [
+        tempoChart,
+        Align(
+          alignment: Alignment.topRight,
+          child: ElevatedButton(
+            onPressed: resetChart,
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            child: const Text('Reset Chart'),
+          ),
+        ),
+      ],
+    );
+
     final tempoCore = Column(
       children: [
         Row(
