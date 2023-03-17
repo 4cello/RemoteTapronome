@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:math';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 //import 'package:flutter_number_picker/flutter_number_picker.dart';
 //import 'package:flutter/rendering.dart' show debugPaintSizeEnabled;
 
@@ -39,6 +40,8 @@ class _MyAppState extends State<MyApp> {
   final scoreDots = <FlSpot>[FlSpot.nullSpot];
 
   Timer metroTimer = Timer(Duration(milliseconds: 0), () => {});
+  final onBeat = AudioPlayer();
+  final offBeat = AudioPlayer();
 
   late DateTime chartStart = DateTime.now();
 
@@ -63,6 +66,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     final now = DateTime.now();
     _resetMS = now.millisecondsSinceEpoch;
+
+    final onBeatAsset = AssetSource("audio/metronome-beat.mp3");
+    final offBeatAsset = AssetSource("audio/metronome-offbeat.mp3");
+    onBeat.setSource(onBeatAsset);
+    offBeat.setSource(offBeatAsset);
+    onBeat.setPlayerMode(PlayerMode.lowLatency);
+    offBeat.setPlayerMode(PlayerMode.lowLatency);
   }
 
   @override
@@ -70,59 +80,6 @@ class _MyAppState extends State<MyApp> {
     final minX = tempoDots.length <= 1 ? 0 : (tempoDots[1].x - 1);
     final maxX =
         tempoDots.length <= 1 ? 1 : (tempoDots[tempoDots.length - 1].x + 1);
-
-    final tempoChart = LineChart(
-      LineChartData(
-        minY: 0,
-        maxY: 240,
-        minX: minX.toDouble(),
-        maxX: maxX.toDouble(),
-        clipData: FlClipData.horizontal(),
-        lineBarsData: [tempoLine(tempoDots), scoreLine(scoreDots)],
-        extraLinesData: ExtraLinesData(
-          horizontalLines: [
-            HorizontalLine(
-              y: _targetTempo.toDouble(),
-              color: _gameActive ? GAME_COLOR : Colors.transparent,
-            )
-          ],
-          extraLinesOnTop: false,
-        ),
-        titlesData: FlTitlesData(
-          show: true,
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          bottomTitles: AxisTitles(
-            axisNameWidget: const Text(
-              "Seconds",
-              style: TextStyle(),
-            ),
-            sideTitles: SideTitles(showTitles: true),
-          ),
-          leftTitles: AxisTitles(
-            axisNameWidget: const Text(
-              "Tempo",
-              style: TextStyle(),
-            ),
-            sideTitles: SideTitles(showTitles: true, reservedSize: 40),
-          ),
-        ),
-      ),
-    );
-
-    final chartStack = Stack(
-      children: [
-        tempoChart,
-        Align(
-          alignment: Alignment.topRight,
-          child: ElevatedButton(
-            onPressed: resetChart,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            child: const Text('Reset Chart'),
-          ),
-        ),
-      ],
-    );
 
     final tempoCore = Column(
       children: [
@@ -315,6 +272,9 @@ class _MyAppState extends State<MyApp> {
       _currentBeat = _currentBeat % _metroBeats + 1;
       metroTimer = newTimer;
     });
+    final audioPlayer = _currentBeat == 1 ? onBeat : offBeat;
+    audioPlayer.stop();
+    audioPlayer.resume();
   }
 
   void toggleMetronome() {
