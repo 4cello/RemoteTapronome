@@ -5,12 +5,7 @@ import 'package:provider/provider.dart';
 
 import "globals.dart" as globals;
 
-class TempoChart extends StatefulWidget {
-  @override
-  TempoChartState createState() => TempoChartState();
-}
-
-class TempoChartState extends State<TempoChart> {
+class TempoChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.read<MetronomeModel>();
@@ -34,7 +29,10 @@ class TempoChartState extends State<TempoChart> {
         minX: minX.toDouble(),
         maxX: maxX.toDouble(),
         clipData: FlClipData.horizontal(),
-        lineBarsData: [tempoLine(tempoDots), scoreLine(scoreDots)],
+        lineBarsData: [
+          tempoLine(context, tempoDots),
+          scoreLine(context, scoreDots)
+        ],
         extraLinesData: ExtraLinesData(
           horizontalLines: [
             HorizontalLine(
@@ -72,7 +70,11 @@ class TempoChartState extends State<TempoChart> {
         Align(
           alignment: Alignment.topRight,
           child: ElevatedButton(
-            onPressed: () => context.read<MetronomeModel>().reset(),
+            onPressed: () {
+              context.read<MetronomeModel>().reset();
+              scoreDots.clear();
+              tempoDots.clear();
+            },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             child: const Text('Reset Chart'),
           ),
@@ -82,7 +84,7 @@ class TempoChartState extends State<TempoChart> {
     return chartStack;
   }
 
-  LineChartBarData tempoLine(List<FlSpot> points) {
+  LineChartBarData tempoLine(BuildContext context, List<FlSpot> points) {
     final targetTempo = context.select((MetronomeModel m) => m.targetTempo);
     final gameActive = context.select((MetronomeModel m) => m.gameActive);
     final backgroundColor = globals.GAME_COLOR.withAlpha(30);
@@ -104,7 +106,7 @@ class TempoChartState extends State<TempoChart> {
     );
   }
 
-  LineChartBarData scoreLine(List<FlSpot> points) {
+  LineChartBarData scoreLine(BuildContext context, List<FlSpot> points) {
     final gameActive = context.select((MetronomeModel m) => m.gameActive);
     return LineChartBarData(
       spots: points,
