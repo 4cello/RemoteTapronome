@@ -61,6 +61,7 @@ class _MyAppState extends State<MyApp> {
     final tempoCore = Column(
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             OutlinedButton(
               onPressed: () =>
@@ -81,6 +82,7 @@ class _MyAppState extends State<MyApp> {
           ],
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
               onPressed: () => toggleMetronome(),
@@ -192,6 +194,7 @@ class _MyAppState extends State<MyApp> {
           if (constraints.maxWidth < 600) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 tempoCore,
                 SizedBox(
@@ -207,6 +210,7 @@ class _MyAppState extends State<MyApp> {
           }
           return Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,

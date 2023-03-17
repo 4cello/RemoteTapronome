@@ -19,9 +19,9 @@ class TempoChart extends StatelessWidget {
         .map((p) => FlSpot(p.x.toDouble(), p.y.toDouble()))
         .toList();
 
-    final minX = tempoDots.length <= 1 ? 0 : (tempoDots[1].x - 1);
+    final minX = tempoDots.isEmpty ? 0 : (tempoDots[0].x - 1);
     final maxX =
-        tempoDots.length <= 1 ? 1 : (tempoDots[tempoDots.length - 1].x + 1);
+        tempoDots.isEmpty ? 1 : (tempoDots[tempoDots.length - 1].x + 1);
     final tempoChart = LineChart(
       LineChartData(
         minY: 0,
